@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}My Website{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
+    <header class="my-header">
+      <div class="navbar">
+        <div class="logo">
+          <img src="static/images/logo.png" alt="Logo" />
+        </div>
+        <nav>
+          <ul class="nav-links">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li id="login-signup-link">
+              <a href="{{ url_for('login') }}">Login</a>
+            </li>
+            <li id="signup-link">
+              <a href="{{ url_for('signup') }}">Signup</a>
+            </li>
+            <li id="logout-link" style="display: none">
+              <a href="#" onclick="logout()">Logout</a>
+            </li>
+            <li><a href="{{ url_for('products') }}">Products</a></li>
+            <li><a href="{{ url_for('profile_page') }}">Profile</a></li>
+          </ul>
+        </nav>
+        <span class="burger-icon">&#9776;</span>
+      </div>
+    </header>
+
+    <main>{% block content %}{% endblock %}</main>
+
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>About Us</h4>
+          <p>
+            We are a leading provider of technology solutions with a focus on
+            innovation and customer satisfaction.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="{{ url_for('signup') }}">Signup</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Follow Us</h4>
+          <ul class="social-links">
+            <li><a href="#" target="_blank">Facebook</a></li>
+            <li><a href="#" target="_blank">Twitter</a></li>
+            <li><a href="#" target="_blank">Instagram</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>
+          &copy; 2024 My Website. All rights reserved.
+          <a href="#">Privacy Policy</a>
+        </p>
+      </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+    <script>
+      // Check if the user is logged in by checking for the token in local storage
+      window.onload = function () {
+        var token = localStorage.getItem("token");
+        if (token) {
+          document.getElementById("login-signup-link").style.display = "none";
+          document.getElementById("signup-link").style.display = "none";
+          document.getElementById("logout-link").style.display = "inline-block";
+        } else {
+          document.getElementById("login-signup-link").style.display =
+            "inline-block";
+          document.getElementById("signup-link").style.display = "inline-block";
+          document.getElementById("logout-link").style.display = "none";
+        }
+      };
+
+      function logout() {
+        window.magicchat_io.logout?.(); // Optional chaining for safety
+        localStorage.removeItem("token");
+        window.location.href = "{{ url_for('home') }}";
+      }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/gh/magicchat-core/prod-ssc-client-cdns@v0.2.7/bundle.js"></script>
+
+    <!-- 
+    To display the MagicChat chatbox on **all pages**, 
+    you can combine both `setUp` and `initialize` into a single <script> block.
+
+    If you only want to show the chatbox on **specific pages**, 
+    it’s better to separate the logic:
+      - Call `setUp` once globally — typically on a common screen like the logout/Home page 
+        (i.e. the screen shown immediately after a user logs out), as recommended in the documentation.
+      - Call `initialize` only on the pages where the chatbox should be active.
+
+    This approach keeps the setup modular and reusable — 
+    allowing you to configure MagicChat just once, and activate it only where needed.
+  -->
+
+
+
+<script>
+  async function getUserUuidData() {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      if (window.location.pathname !== "/login") {
+        alert("Failed to load profile. Please login again.");
+        window.location.href = "/login";
+      }
+      return null;
+    }
+
+    try {
+      const response = await fetch("/api/profile", {
+        method: "GET",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.ok) {
+        return await response.json();
+      } else {
+        localStorage.removeItem("token");
+        if (window.location.pathname !== "/login") {
+          alert("Session expired. Please login again.");
+          window.location.href = "/login";
+        }
+        return null;
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      return null;
+    }
+  }
+
+  // Store the promise globally
+  window.profileDataPromise = getUserUuidData();
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const profileData = await window.profileDataPromise; // Change this line to match how your application retrieves profile data
+
+    if (!profileData) {
+      await window.magicchat_io.setUp(
+        "<MAGICCHAT_APP_NAME>",
+        "<MAGICCHAT_API_KEY>"
+      );
+    } else {
+      await window.magicchat_io.initialize({
+        app_version: "V2",
+        uid: profileData.username,
+      });
+    }
+  });
+</script>
+
+  </body>
+</html>
