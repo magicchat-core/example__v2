@@ -99,7 +99,7 @@
       }
     </script>
 
-    <script src="https://cdn.jsdelivr.net/gh/magicchat-core/prod-ssc-client-cdns@v0.2.8/bundle.js"></script>
+
 
     <!-- 
     To display the MagicChat chatbox on **all pages**, 
@@ -155,23 +155,7 @@
   window.profileDataPromise = getUserUuidData();
 </script>
 
-<script>
-  document.addEventListener("DOMContentLoaded", async () => {
-    const profileData = await window.profileDataPromise; // Change this line to match how your application retrieves profile data
 
-    if (!profileData) {
-      await window.magicchat_io.setUp(
-        "<MAGICCHAT_APP_NAME>",
-        "<MAGICCHAT_API_KEY>"
-      );
-    } else {
-      await window.magicchat_io.initialize({
-        app_version: "V2",
-        uid: profileData.username,
-      });
-    }
-  });
-</script>
 
   </body>
 </html>
