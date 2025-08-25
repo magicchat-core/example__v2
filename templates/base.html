@@ -101,19 +101,7 @@
 
 
 
-    <!-- 
-    To display the MagicChat chatbox on **all pages**, 
-    you can combine both `setUp` and `initialize` into a single <script> block.
-
-    If you only want to show the chatbox on **specific pages**, 
-    it’s better to separate the logic:
-      - Call `setUp` once globally — typically on a common screen like the logout/Home page 
-        (i.e. the screen shown immediately after a user logs out), as recommended in the documentation.
-      - Call `initialize` only on the pages where the chatbox should be active.
-
-    This approach keeps the setup modular and reusable — 
-    allowing you to configure MagicChat just once, and activate it only where needed.
-  -->
+    <!-- HERE YOU CAN ADD MAGICCHAT INTEGRATION !-->
 
 
 
@@ -121,13 +109,19 @@
   async function getUserUuidData() {
     const token = localStorage.getItem("token");
 
-    if (!token) {
-      if (window.location.pathname !== "/login") {
-        alert("Failed to load profile. Please login again.");
-        window.location.href = "/login";
-      }
-      return null;
-    }
+  if (!token) {
+  const path = window.location.pathname;
+
+  // allow signup and login pages without token
+  if (path === "/signup" || path === "/login") {
+    return null;
+  }
+
+  // redirect for all other paths
+  alert("Failed to load profile. Please login again.");
+  window.location.href = "/login";
+  return null;
+}
 
     try {
       const response = await fetch("/api/profile", {

@@ -67,25 +67,7 @@ def api_signup():
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     new_user = User(email=email, password=hashed_password,username=username)
     db.session.add(new_user)
-
-
-
-    # ONBOARDING FOR V2 users
-    req_url = "https://auth.addchat.tech/dev/onboarding" 
-    headers = {
-        "Accept": "*/*",
-        "X-API-Key": "<MAGICCHAT_API_KEY>",
-        "Content-Type": "application/json",
-    }
-    payload = {
-        "uid": new_user.username, #Any thing which is part of your datasets and is unique will be qualified `UID``.
-        "app_name": "<MAGICCHAT_APP_NAME>",
-        "version":"V2"
-    }
-
-    response = requests.post(req_url, headers=headers, json=payload)
-    response.raise_for_status() 
-    data = response.json() 
+    
     db.session.commit()
 
     return jsonify({'message': 'User registered successfully'}), 201
