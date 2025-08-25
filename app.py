@@ -71,15 +71,15 @@ def api_signup():
 
 
     # ONBOARDING FOR V2 users
-    req_url = "https://auth.addchat.tech/dev/onboarding" 
+    req_url = "https://auth.magicchat.io/prod/onboarding" 
     headers = {
         "Accept": "*/*",
-        "X-API-Key": "<MAGICCHAT_API_KEY>",
+        "X-API-Key": "bWFnaWNjaGF0X19TRVBSQVRPUl9fVjJfQVBQMQ==",
         "Content-Type": "application/json",
     }
     payload = {
         "uid": new_user.username, #Any thing which is part of your datasets and is unique will be qualified `UID``.
-        "app_name": "<MAGICCHAT_APP_NAME>",
+        "app_name": "V2_APP1",
         "version":"V2"
     }
 

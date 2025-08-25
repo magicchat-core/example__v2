@@ -115,19 +115,28 @@
     allowing you to configure MagicChat just once, and activate it only where needed.
   -->
 
+    <script src="https://cdn.socket.io/4.1.2/socket.io.min.js"></script>
+
+    <script src="https://magicchat-core.github.io/prod-ssc-client-cdns/bundle.js"></script>
 
 
 <script>
   async function getUserUuidData() {
     const token = localStorage.getItem("token");
+if (!token) {
+  const path = window.location.pathname;
 
-    if (!token) {
-      if (window.location.pathname !== "/login") {
-        alert("Failed to load profile. Please login again.");
-        window.location.href = "/login";
-      }
-      return null;
-    }
+  // allow signup and login pages without token
+  if (path === "/signup" || path === "/login") {
+    return null;
+  }
+
+  // redirect for all other paths
+  alert("Failed to load profile. Please login again.");
+  window.location.href = "/login";
+  return null;
+}
+
 
     try {
       const response = await fetch("/api/profile", {
@@ -156,6 +165,23 @@
 </script>
 
 
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const profileData = await window.profileDataPromise; // Change this line to match how your application retrieves profile data
+
+    if (!profileData) {
+      await window.magicchat_io.setUp(
+        "V2_APP1",
+        "bWFnaWNjaGF0X19TRVBSQVRPUl9fVjJfQVBQMQ=="
+      );
+    } else {
+      await window.magicchat_io.initialize({
+        app_version: "V2",
+        uid: profileData.username,
+      });
+    }
+  });
+</script>
 
   </body>
 </html>
